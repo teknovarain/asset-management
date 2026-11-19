@@ -340,6 +340,11 @@
 
     // Prompt URL otomatis jika belum pernah dikonfigurasi
     window.addEventListener("DOMContentLoaded", () => {
+      const urlParams = new URLSearchParams(window.location.search);
+const apiFromParam = urlParams.get("api");
+if (apiFromParam && apiFromParam.includes("script.google.com")) {
+  localStorage.setItem(STORAGE_KEY, apiFromParam);
+}
       if (!getApiUrl()) {
         setTimeout(() => openConfigModal(), 400);
       }
