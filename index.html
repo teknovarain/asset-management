@@ -15,17 +15,23 @@
 
   <!-- Header -->
   <header class="bg-indigo-900 text-white shadow-md">
-    <div class="max-w-3xl mx-auto px-4 py-3 flex justify-between items-center">
-      <div class="flex items-center space-x-3">
-        <i class="fa-solid fa-qrcode text-2xl text-indigo-300"></i>
-        <div>
-          <h1 class="text-base font-bold">QR Asset Scanner (Stock Opname)</h1>
-          <p class="text-[11px] text-indigo-200">PT Teknovara • GA & IT Portal</p>
+    <div class="max-w-3xl mx-auto px-4 py-3 flex justify-between items-center gap-2">
+      <div class="flex items-center space-x-3 min-w-0">
+        <i class="fa-solid fa-qrcode text-2xl text-indigo-300 shrink-0"></i>
+        <div class="truncate">
+          <h1 class="text-sm sm:text-base font-bold truncate">QR Asset Scanner (Stock Opname)</h1>
+          <p class="text-[11px] text-indigo-200 truncate">PT Teknovara • GA & IT Portal</p>
         </div>
       </div>
-      <button onclick="openConfigModal()" class="text-xs bg-indigo-800 hover:bg-indigo-700 px-3 py-1.5 rounded-lg text-indigo-100 flex items-center space-x-1 transition">
-        <i class="fa-solid fa-gear"></i><span>API URL</span>
-      </button>
+
+      <div class="flex items-center space-x-2 shrink-0">
+        <button onclick="goBackToPortal()" class="text-xs bg-emerald-600 hover:bg-emerald-500 px-3 py-1.5 rounded-lg text-white font-semibold flex items-center space-x-1.5 transition shadow-sm">
+          <i class="fa-solid fa-arrow-left"></i><span>Portal</span>
+        </button>
+        <button onclick="openConfigModal()" class="text-xs bg-indigo-800 hover:bg-indigo-700 px-3 py-1.5 rounded-lg text-indigo-100 flex items-center space-x-1 transition">
+          <i class="fa-solid fa-gear"></i><span>API URL</span>
+        </button>
+      </div>
     </div>
   </header>
 
@@ -34,6 +40,13 @@
 
     <!-- Scanner Card -->
     <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
+      <div class="flex items-center justify-between mb-3">
+        <button onclick="goBackToPortal()" class="text-xs font-semibold text-indigo-600 hover:text-indigo-800 flex items-center space-x-1.5 py-1 px-2 rounded-lg hover:bg-indigo-50 transition">
+          <i class="fa-solid fa-arrow-left"></i>
+          <span>Kembali ke Apps Script Asset Management</span>
+        </button>
+      </div>
+
       <div class="text-center mb-4">
         <h2 class="text-lg font-bold text-slate-800">Pindai QR Code Fisik Aset</h2>
         <p class="text-xs text-slate-500 mt-0.5">Arahkan kamera belakang HP ke label QR Code aset</p>
@@ -117,7 +130,7 @@
         <button onclick="closeConfigModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
       </div>
       <p class="text-xs text-slate-500">Masukkan URL Web App Google Apps Script Anda (berakhiran <code class="bg-slate-100 px-1 rounded">/exec</code>):</p>
-      <input type="url" id="api-url-input" placeholder="https://script.google.com/macros/s/AKfycbzGIGXwJMQVUzKXBpdKCsXHqfaazSqdpM2duNvC-izbYpzikqwBEMrjG3_YCleFrRofeQ/exec" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs font-mono">
+      <input type="url" id="api-url-input" placeholder="https://script.google.com/macros/s/.../exec" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs font-mono">
       <div class="flex justify-end space-x-2 pt-2">
         <button onclick="closeConfigModal()" class="px-4 py-2 bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold">Batal</button>
         <button onclick="saveApiUrl()" class="px-4 py-2 bg-indigo-600 text-white rounded-xl text-xs font-semibold">Simpan URL</button>
@@ -146,6 +159,19 @@
 
     function getApiUrl() {
       return localStorage.getItem(STORAGE_KEY) || "";
+    }
+
+    async function goBackToPortal() {
+      await stopScanner();
+      const portalUrl = getApiUrl();
+      if (portalUrl && portalUrl.includes("script.google.com")) {
+        window.location.href = portalUrl;
+      } else if (window.history.length > 1) {
+        window.history.back();
+      } else {
+        showPopup("URL Apps Script belum diatur. Silakan isi URL Web App terlebih dahulu.", "URL Belum Diatur", "info");
+        openConfigModal();
+      }
     }
 
     function openConfigModal() {
